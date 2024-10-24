@@ -1,10 +1,11 @@
 using UnityEngine;
 
-public class PlayerWalk : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;        // Horizontal movement speed
     public float jumpForce = 15f;       // Jump force for vertical movement
-    //public Animator animator;           // Animator for controlling animations
+    
+    public Animator animator;           // Animator for controlling animations
 
     private Rigidbody2D rb;             // Rigidbody2D component
     private bool isFacingRight = true;  // Track whether the player is facing right
@@ -24,6 +25,10 @@ public class PlayerWalk : MonoBehaviour
         groundLayer = LayerMask.GetMask("Ground");         // Set the ground layer (replace "Ground" with the actual layer name).
 
         rb.freezeRotation = true; // Lock the character's rotation.
+
+        animator = GetComponent<Animator>();
+   
+
     }
 
     void Update()
@@ -37,22 +42,38 @@ public class PlayerWalk : MonoBehaviour
             FlipCharacter();
         }
 
+        
+
+
         // Check if the player is grounded and handle jumping logic
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // Jump input using the Space Bar (or "Jump" button in Input Manager)
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            
             if (isGrounded)
             {
                 Jump();
+                animator.SetInteger("playerState", 2); // Turn on jump animation
                 canDoubleJump = true; // Allow double jump after the first jump
             }
             else if (canDoubleJump)
             {
                 Jump();
+                animator.SetInteger("playerState", 2); // Turn on jump animation
                 canDoubleJump = false; // Disable double jump after second jump
             }
+        }
+
+        if (Input.GetButton("Horizontal"))
+        {
+            animator.SetInteger("playerState", 1); // Turn on run animation
+        }
+        else
+        {
+            if (isGrounded) animator.SetInteger("playerState", 0);
+            // Turn on idle animation
         }
 
         // Control the animation based on whether the player is jumping or not
@@ -79,6 +100,9 @@ public class PlayerWalk : MonoBehaviour
 
     void Jump()
     {
+
+        
+                                               
         // Apply vertical force to jump
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
 
