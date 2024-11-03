@@ -4,8 +4,9 @@ public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;        // Horizontal movement speed
     public float jumpForce = 15f;       // Jump force for vertical movement
-    
-    public Animator animator;           // Animator for controlling animations
+
+    private Animator animator;
+                                        // Animator for controlling animations  
 
     private Rigidbody2D rb;             // Rigidbody2D component
     private bool isFacingRight = true;  // Track whether the player is facing right
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         // Automatically get references to Rigidbody2D, groundCheck, and groundLayer
         rb = GetComponent<Rigidbody2D>();                  // Get the Rigidbody2D component of the player.
         groundCheck = transform.Find("GroundCheck");       // Find the ground check position (assumes a child object named "GroundCheck").
@@ -26,8 +28,8 @@ public class PlayerMovement : MonoBehaviour
 
         rb.freezeRotation = true; // Lock the character's rotation.
 
-        animator = GetComponent<Animator>();
-   
+
+       
 
     }
 
@@ -36,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
         // Get the horizontal input (A/D or Left/Right arrow keys)
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
+        
         // Handle character flip when moving left or right
         if ((horizontalInput < 0 && isFacingRight) || (horizontalInput > 0 && !isFacingRight))
         {
@@ -79,7 +82,8 @@ public class PlayerMovement : MonoBehaviour
         // Control the animation based on whether the player is jumping or not
         if (!isGrounded)
         {
-            isJumping = true;
+            animator.SetInteger("playerState", 2);
+            isJumping = true;   
         }
         else
         {
